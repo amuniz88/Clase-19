@@ -53,11 +53,11 @@ public class TestClass {
     }
 
     @Test(priority = 1)
-    public void form(){
+    public void testAppointment(){
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("combo_facility")));
 
-        Select combo = new Select(driver.findElement(By.id("id=combo_facility")));
-        combo.selectByIndex(2);
+        Select combo = new Select(driver.findElement(By.cssSelector("[id=combo_facility]")));
+        combo.selectByValue("Hongkong CURA Healthcare Center");
 
         //Check
         driver.findElement(By.id("chk_hospotal_readmission")).click();
@@ -72,8 +72,6 @@ public class TestClass {
 
         titleForm = driver.findElement(By.cssSelector(".col-xs-12 h2")).getText();
         Assert.assertEquals(titleForm, "Appointment Confirmation");
-
-
     }
 
     @AfterClass
