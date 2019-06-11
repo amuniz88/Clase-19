@@ -74,8 +74,6 @@ public class TestClass {
         Assert.assertEquals(titleForm, "Appointment Confirmation");
 
 
-        //Probando che, modificate
-
     }
 
     @AfterClass
