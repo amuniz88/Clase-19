@@ -8,14 +8,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class TestClass {
 
     private WebDriver driver;
     private WebDriverWait wait;
-    private WebElement btnAppointment, check, radio, coment, calendar;
+    private WebElement btnAppointment;
     private String titleForm;
 
     @BeforeClass
@@ -23,14 +22,14 @@ public class TestClass {
         System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
         driver  = new ChromeDriver();
         driver.get("https://katalon-demo-cura.herokuapp.com/");
+        wait    = new WebDriverWait(driver, 10);
     }
 
-    @BeforeMethod
-    public void startTest(){
-        wait    = new WebDriverWait(driver, 10);
+//    @BeforeMethod
+//    public void startTest(){
         //options.addArguments("--headless"); para correr sin interfáz
         //para linux se necesita un paquete llamado xvFb
-    }
+//    }
 
     @Test(priority = 0)
     public void login(){
@@ -39,7 +38,7 @@ public class TestClass {
         btnAppointment = driver.findElement(By.id("btn-make-appointment"));
         btnAppointment.click();
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".col-sm-12 h2")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h2")));
 
         driver.findElement(By.id("txt-username")).sendKeys("John Doe");
         driver.findElement(By.id("txt-password")).sendKeys("ThisIsNotAPassword");
@@ -48,7 +47,10 @@ public class TestClass {
 
         Assert.assertEquals(driver.getTitle(), "CURA Healthcare Service");
 
-        titleForm = driver.findElement(By.cssSelector(".col-sm-12 h2")).getText();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h2")));
+
+        titleForm = driver.findElement(By.tagName("h2")).getText();
+//        titleForm = driver.findElement(By.cssSelector(".col-sm-12 h2")).getText();
         Assert.assertEquals(titleForm, "Make Appointment");
     }
 
@@ -70,7 +72,10 @@ public class TestClass {
         //Click boton
         driver.findElement(By.id("btn-book-appointment")).click();
 
-        titleForm = driver.findElement(By.cssSelector(".col-xs-12 h2")).getText();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h2")));
+
+        titleForm = driver.findElement(By.tagName("h2")).getText();
+//        titleForm = driver.findElement(By.cssSelector(".col-xs-12 h2")).getText();
         Assert.assertEquals(titleForm, "Appointment Confirmation");
     }
 
