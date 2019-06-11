@@ -2,6 +2,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -22,10 +23,17 @@ public class TestClass {
     @BeforeClass
     public void start(){
         System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
-        driver  = new ChromeDriver();
+
+        //maximisar pantalla en chrome
+        ChromeOptions options = new ChromeOptions();
+
+        driver  = new ChromeDriver(options);
         driver.get("https://katalon-demo-cura.herokuapp.com/");
         wait    = new WebDriverWait(driver, 10);
         SA = new SoftAssert();
+
+
+//        options.addArguments()
     }
 
 //    @BeforeMethod
