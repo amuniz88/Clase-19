@@ -26,6 +26,8 @@ public class TestClass {
 
         //maximisar pantalla en chrome
         ChromeOptions options = new ChromeOptions();
+//        options.addArguments("--start"); para Firefox
+        options.addArguments("disable-infobars");
 
         driver  = new ChromeDriver(options);
         driver.get("https://katalon-demo-cura.herokuapp.com/");
@@ -99,6 +101,7 @@ public class TestClass {
 
     @AfterClass
     public void tearDown(){
+        SA.assertAll();
         driver.quit();
     }
 }
