@@ -1,33 +1,30 @@
 package pageObject;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
-import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
-public class HomePage {
-    WebDriver driver;
+public class HomePage extends BasePage{
 
-    @FindBy(how = How.ID, using = "user")
-    WebElement inputUser;
 
-    @FindBy(how = How.ID, using = "pass")
-    WebElement inputPassword;
 
-//    @FindBy(how = How.ID, using = "inputButton")  esta comentado porque se debe hacer con esta línea pero es lo mismo no hacerlo, te toma el valor inputButton y lo primero que recorre son todos los ID buscando, si no lo encuentra sigue con los name y luego con class, etc
-    WebElement inputButton;
+    @FindBy(how = How.ID, using = "btn-make-appointment")
+    WebElement btnAppointment;
 
     //Constructor
     public HomePage(WebDriver driver){
-        this.driver = driver;
-        PageFactory.initElements(driver, this);
+        super(driver);
     }
 
-    //método que se puede utilizar en varios lugares
-    public void login(String usuario, String password){
-        inputUser.sendKeys(usuario);
-        inputPassword.sendKeys(password);
-        inputButton.click();
+    public LoginPage clickMakeAppointment(){
+        btnAppointment.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h2")));
+
+        return new LoginPage(driver);
     }
+
+
 }
