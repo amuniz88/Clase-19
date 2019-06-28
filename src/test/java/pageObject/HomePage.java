@@ -20,6 +20,7 @@ public class HomePage extends BasePage{
     }
 
     public LoginPage clickMakeAppointment(){
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("btn-make-appointment")));
         btnAppointment.click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h2")));
 

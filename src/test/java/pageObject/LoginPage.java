@@ -21,17 +21,13 @@ public class LoginPage extends BasePage{
     @FindBy(how = How.TAG_NAME, using = "h2")
     WebElement subTitle;
 
+    @FindBy(css = ".text-danger")
+    WebElement msgError;
+
     //Constructor
     public LoginPage(WebDriver driver){
         super(driver);
     }
-
-//    public void login(String usuario, String password){
-//        inputUser.sendKeys(usuario);
-//        inputPassword.sendKeys(password);
-//        inputButton.click();
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("combo_facility")));
-//    }
 
     public MakeAppointment loginRet(String usuario, String password){
         inputUser.sendKeys(usuario);
@@ -42,11 +38,26 @@ public class LoginPage extends BasePage{
         return new MakeAppointment(driver);
     }
 
+    public void loginFailed(String usuario, String password) {
+        inputUser.sendKeys(usuario);
+        inputPassword.sendKeys(password);
+        inputButton.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".text-danger")));
+    }
+
     public boolean Title(){
         return driver.getTitle().contains("CURA Healthcare Service");
     }
 
     public boolean subtitleAppointment(){
         return subTitle.getText().contains("Make Appointment");
+    }
+
+    public boolean msgErrorIsDisplayed(){
+        return msgError.isDisplayed();
+    }
+
+    public boolean msgErrorContains(String valor){
+        return msgError.getText().contains(valor);
     }
 }

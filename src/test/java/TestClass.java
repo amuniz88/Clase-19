@@ -1,10 +1,10 @@
+import DataProviders.DPLogin;
+import DataProviders.DPMakeAppointment;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 import pageObject.FinalPage;
 import pageObject.HomePage;
@@ -13,17 +13,26 @@ import pageObject.MakeAppointment;
 
 public class TestClass {
 
+    String user = "John Doe";
+    String pass = "ThisIsNotAPassword";
+//    String comment = "Comentario sobre la clase 19";
+//    String cal = "07/06/2019";
+//    String facility = "Hongkong CURA Healthcare Center";
+//    boolean check = true;
+//    String radio = "Medicaid";
+    String appoint = "Appointment Confirmation";
+    String msgError = "Login failed! Please ensure the username and password are valid.";
+    int contador = 0;
+
     private WebDriver driver;
-//    private WebDriverWait wait;
-//    private WebElement btnAppointment;
-//    private String titleForm;
     private SoftAssert SA;
     private HomePage homePage;
     private LoginPage loginPage;
     private MakeAppointment makeApp;
     private FinalPage finalPage;
 
-    @BeforeClass
+    //alwaysRun = true -- Para indicar que siempre se ejecute para cada clase o methodo
+    @BeforeMethod(alwaysRun = true)
     public void start(){
         System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
 
@@ -42,36 +51,50 @@ public class TestClass {
         finalPage = new FinalPage(driver);
 
     }
-
-    @Test(priority = 0)
-    public void login(){
+    //Si lo ejecutamos desde el método es necesario los Optional porque no pasa por el xml
+    //de lo contrario tiene que ser ejecutado desde el xml
+    @Test//(priority = 0)
+    @Parameters({"user","pass"})
+    public void login(@Optional("John Doe") String us, @Optional("ThisIsNotAPassword") String pa){
         loginPage = homePage.clickMakeAppointment();
-        loginPage.loginRet("John Doe", "ThisIsNotAPassword");
+        loginPage.loginRet(us, pa);
+
         Assert.assertTrue(loginPage.Title());
         Assert.assertTrue(loginPage.subtitleAppointment());
     }
 
-    @Test(priority = 1)
-    public void testAppointment(){
+    @Test(dataProvider = "LoginFailedProvider", dataProviderClass = DPLogin.class)
+    public void loginFailed(String user, String pass){
         loginPage = homePage.clickMakeAppointment();
-        makeApp = loginPage.loginRet("John Doe", "ThisIsNotAPassword");
+        loginPage.loginFailed(user, pass);
 
-        finalPage = makeApp.addAppointment("07/06/2019", "Comentario sobre la clase 19");
+        Assert.assertTrue(loginPage.msgErrorIsDisplayed());
+        Assert.assertTrue(loginPage.msgErrorContains(msgError));
+    }
+
+    @Test(dataProvider = "AppointmentProvider", dataProviderClass = DPMakeAppointment.class)
+    public void testAppointment(String cal, String comment, String radio, String facility, boolean check){
+        contador = contador + 1;
+
+        loginPage = homePage.clickMakeAppointment();
+        makeApp = loginPage.loginRet(user, pass);
+
+        finalPage = makeApp.addAppointment(cal, comment, radio, facility, check);
 
         Assert.assertTrue(finalPage.titleIdDisplayed());
-        Assert.assertTrue(finalPage.titleContains());
+        Assert.assertTrue(finalPage.titleContains(appoint));
 
-        SA.assertTrue(finalPage.facilityContain());
-        SA.assertTrue(finalPage.hospitalContain());
-        SA.assertTrue(finalPage.programContain());
-        SA.assertTrue(finalPage.visitDateContain());
-        SA.assertTrue(finalPage.commentContain());
+        SA.assertTrue(finalPage.facilityContain(facility));
+        System.out.println(check);
+        SA.assertTrue(finalPage.hospitalContain(check));
+        SA.assertTrue(finalPage.programContain(radio));
+        SA.assertTrue(finalPage.visitDateContain(cal));
+        SA.assertTrue(finalPage.commentContain(comment));
         SA.assertAll();
     }
 
-    @AfterClass
+    @AfterMethod
     public void tearDown(){
-
         driver.quit();
     }
 }

@@ -16,8 +16,14 @@ public class MakeAppointment extends BasePage{
     @FindBy(how = How.ID, using = "chk_hospotal_readmission")
     WebElement inputCheck;
 
+    @FindBy(how = How.ID, using = "radio_program_medicare")
+    WebElement inputRadioMedicare;
+
     @FindBy(how = How.ID, using = "radio_program_medicaid")
-    WebElement inputRadio;
+    WebElement inputRadioMedicaid;
+
+    @FindBy(how = How.ID, using = "radio_program_none")
+    WebElement inputRadioNone;
 
     @FindBy(how = How.ID, using = "txt_visit_date")
     WebElement inputDate;
@@ -32,12 +38,22 @@ public class MakeAppointment extends BasePage{
         super(driver);
     }
 
-    public FinalPage addAppointment(String calendar, String comment){
+    public FinalPage addAppointment(String calendar, String comment, String radio, String comboHospital, boolean check){
         Select combo = new Select(inputFacility);
-        combo.selectByValue("Hongkong CURA Healthcare Center");
+        combo.selectByValue(comboHospital);
 
-        inputCheck.click();
-        inputRadio.click();
+        if(check==true) {
+            inputCheck.click();
+        }
+
+        if(radio.equals("Medicare")) {
+            inputRadioMedicare.click();
+        }else if(radio.equals("Medicaid")) {
+            inputRadioMedicaid.click();
+        }else {
+            inputRadioNone.click();
+        }
+
         inputDate.sendKeys(calendar);
         inputComment.sendKeys(comment);
         btnAppointment.click();
