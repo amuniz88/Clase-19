@@ -1,25 +1,27 @@
-import DataProviders.DPLogin;
-import DataProviders.DPMakeAppointment;
+import DataProviders.DPGeneral;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import pageObject.FinalPage;
 import pageObject.HomePage;
 import pageObject.LoginPage;
 import pageObject.MakeAppointment;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class TestClass {
 
     String user = "John Doe";
     String pass = "ThisIsNotAPassword";
-//    String comment = "Comentario sobre la clase 19";
-//    String cal = "07/06/2019";
-//    String facility = "Hongkong CURA Healthcare Center";
-//    boolean check = true;
-//    String radio = "Medicaid";
     String appoint = "Appointment Confirmation";
     String msgError = "Login failed! Please ensure the username and password are valid.";
     int contador = 0;
@@ -33,15 +35,34 @@ public class TestClass {
 
     //alwaysRun = true -- Para indicar que siempre se ejecute para cada clase o methodo
     @BeforeMethod(alwaysRun = true)
-    public void start(){
-        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
+    @Parameters({"usuario", "password", "browser"})
+    public void start(String usuario, String password, String browser){
+        if(browser.equalsIgnoreCase("chrome")){
+            System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
 
-        //maximisar pantalla en chrome
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("disable-infobars");
+            //maximisar pantalla en chrome
+            ChromeOptions options = new ChromeOptions();
+            driver = new ChromeDriver(options);
+            options.addArguments("disable-infobars");
+        }else if (browser.equalsIgnoreCase("firefox")){
+            System.setProperty("webdriver.gecko.driver", "drivers/geckodriver.exe");
+            driver = new FirefoxDriver();
+        }
 
-        driver  = new ChromeDriver(options);
-        driver.get("https://katalon-demo-cura.herokuapp.com/");
+        Properties properties = new Properties();
+        InputStream in = getClass().getResourceAsStream("/config.properties");
+        try {
+            properties.load(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        driver.get(properties.getProperty("URL"));
+        //No usamos esta línea en este ejercicio pero a modo de explicación la colocamos
+        String a = properties.getProperty("db.connection");
+
+        this.user = usuario;
+        this.pass = password;
 
         SA = new SoftAssert();
 
@@ -51,19 +72,20 @@ public class TestClass {
         finalPage = new FinalPage(driver);
 
     }
-    //Si lo ejecutamos desde el método es necesario los Optional porque no pasa por el xml
-    //de lo contrario tiene que ser ejecutado desde el xml
-    @Test//(priority = 0)
-    @Parameters({"user","pass"})
-    public void login(@Optional("John Doe") String us, @Optional("ThisIsNotAPassword") String pa){
+//Si lo ejecutamos desde el método es necesario los Optional porque no pasa por el xml
+//de lo contrario tiene que ser ejecutado desde el xml
+//Ejemplo de un la parametrización por archivo.xml
+//    public void login(@Optional("John Doe") String us, @Optional("ThisIsNotAPassword") String pa){
+    @Test
+    public void login(){
         loginPage = homePage.clickMakeAppointment();
-        loginPage.loginRet(us, pa);
+        loginPage.loginRet(user, pass);
 
         Assert.assertTrue(loginPage.Title());
         Assert.assertTrue(loginPage.subtitleAppointment());
     }
 
-    @Test(dataProvider = "LoginFailedProvider", dataProviderClass = DPLogin.class)
+    @Test(dataProvider = "LoginFailedProvider", dataProviderClass = DPGeneral.class)
     public void loginFailed(String user, String pass){
         loginPage = homePage.clickMakeAppointment();
         loginPage.loginFailed(user, pass);
@@ -72,7 +94,7 @@ public class TestClass {
         Assert.assertTrue(loginPage.msgErrorContains(msgError));
     }
 
-    @Test(dataProvider = "AppointmentProvider", dataProviderClass = DPMakeAppointment.class)
+    @Test(dataProvider = "AppointmentProvider", dataProviderClass = DPGeneral.class)
     public void testAppointment(String cal, String comment, String radio, String facility, boolean check){
         contador = contador + 1;
 

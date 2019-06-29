@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="SuiteTesst-Clase19To24" thread-count="1">
+<suite name="SuiteTesst-Clase19To24" parallel="tests" thread-count="2">
     <parameter name="user" value="John Doe"/>
     <parameter name="pass" value="ThisIsNotAPassword"/>
-    <parameter name="browser" value="chrome"/>
-<test name="test">
-    <classes>
-        <class name="TestClass">
-<!--            Para ejecutar métodos específicos-->
-<!--            <methods>-->
-<!--                <include name="login"/>-->
-<!--                <include name="loginFailed"/>-->
-<!--                <include name="testAppointment"/>-->
-<!--            </methods>-->
-        </class>
-    </classes>
-</test>
+    <parameter name="browser" value="chrome"/> <!--cambiando este parametro por el valor firefox/chrome se puede ejecutar uno u otro-->
+    <test name="test">
+        <classes>
+            <class name="TestClass">
+    <!--        Para ejecutar métodos específicos-->
+                <methods>
+                    <include name="login"/>
+                    <include name="loginFailed"/>
+                    <include name="testAppointment"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+<!--    Si tenemos este otro test, se puede ejecutar ambos paralelamente agregando el parallel en la suite y ampliando de 1 a 2 el thread-count -->
+    <test name="test in firefox" >
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="TestClass" >
+                <methods>
+                    <include name="login"/>
+                    <include name="badLogin"/>
+                    <include name="testAppointment"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
 </suite>
